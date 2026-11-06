@@ -299,6 +299,7 @@ function addRoomOption(room, player, rawName) {
     cuisine: template?.cuisine || '自定义',
     tags: template?.tags ? [...template.tags] : [],
     addedBy: player.name,
+    addedById: player.id,
     createdAt: now()
   };
   room.options.push(option);
@@ -418,6 +419,37 @@ async function handleRooms(req, res, url) {
       apiError(res, error.status || 400, error.message);
       return;
     }
+    broadcast(room);
+    sendJson(res, 200, { room: publicRoom(room, player.id) });
+    return;
+  }
+
+  // 移除选项：房主可以移除任意选项，参与者可以移除自己加的选项。
+  if (action === 'remove-option' && req.method === 'POST') {
+    if (room.phase === 'result') {
+      apiError(res, 409, '这轮已经定了，先开下一轮吧。');
+      return;
+    }
+    if (room.options.length <= 1) {
+      apiError(res, 400, '桌上至少留一个选项，不然就没得选了。');
+      return;
+    }
+    const option = room.options.find((entry) => entry.id === body.optionId);
+    if (!option) {
+      apiError(res, 404, '这个选项已经不在桌上了。');
+      return;
+    }
+    const canRemove = player.id === room.hostId || option.addedById === player.id;
+    if (!canRemove) {
+      apiError(res, 403, '只能移除自己加的选项，或者请房主帮忙。');
+      return;
+    }
+    room.options = room.options.filter((entry) => entry.id !== option.id);
+    for (const vote of Object.values(room.votes)) {
+      if (vote.optionId === option.id) vote.optionId = null;
+      if (vote.vetoId === option.id) vote.vetoId = null;
+    }
+    touch(room);
     broadcast(room);
     sendJson(res, 200, { room: publicRoom(room, player.id) });
     return;

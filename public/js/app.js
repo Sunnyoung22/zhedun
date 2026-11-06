@@ -93,6 +93,10 @@ const store = {
     if (customOptions.length > 24) customOptions = customOptions.slice(-24);
     storageSet(KEYS.custom, customOptions);
   },
+  removeCustom(optionId) {
+    customOptions = customOptions.filter((option) => option.id !== optionId);
+    storageSet(KEYS.custom, customOptions);
+  },
   commit(entry) {
     if (!entry?.id) return;
     const stored = sanitizeHistory(storageGet(KEYS.history, []));

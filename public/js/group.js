@@ -404,6 +404,8 @@ export function createGroup({ store, openAbout }) {
     const maxVotes = Math.max(1, ...room.options.map((option) => option.votes || 0));
     const myVote = room.myVote || {};
     const canVote = room.phase === 'voting';
+    const isHost = Boolean(room.you?.isHost);
+    const viewerId = room.you?.id || '';
 
     els.roomOptions.innerHTML = room.options.map((option) => {
       const tone = TONES[option.tone] || TONES.tomato;
@@ -416,6 +418,9 @@ export function createGroup({ store, openAbout }) {
       if (option.vetoes) metaBits.push(`${option.vetoes} 票否决`);
       const width = Math.round(((option.votes || 0) / maxVotes) * 100);
       const addedBy = option.addedBy ? `${option.addedBy} 放的` : '';
+      const canDelete = room.options.length > 1
+        && room.phase !== 'result'
+        && (isHost || option.addedById === viewerId);
       const actions = canVote ? `
         <div class="option-actions">
           <button type="button" class="vote-btn${voted ? ' is-on' : ''}" data-action="vote" data-option-id="${escapeHtml(option.id)}" aria-pressed="${voted}" title="投一票想吃">
@@ -434,6 +439,7 @@ export function createGroup({ store, openAbout }) {
             <div class="option-title-line">
               <h4>${escapeHtml(option.name)}</h4>
               ${addedBy ? `<span class="added-by">${escapeHtml(addedBy)}</span>` : ''}
+              ${canDelete ? `<button type="button" class="option-remove" data-action="remove" data-option-id="${escapeHtml(option.id)}" title="从桌上移除" aria-label="从桌上移除${escapeHtml(option.name)}">移除</button>` : ''}
             </div>
             <p class="option-meta">${metaBits.map(escapeHtml).join('<span class="dot"></span>')}</p>
             ${canVote ? `<div class="vote-bar" aria-hidden="true"><span style="width:${width}%"></span></div>` : ''}
@@ -583,11 +589,24 @@ export function createGroup({ store, openAbout }) {
   }
 
   function handleOptionAction(event) {
-    if (!room || room.phase !== 'voting' || busy) return;
+    if (!room || room.phase === 'result' || busy) return;
     const button = event.target.closest('[data-action]');
     if (!button) return;
     const action = button.dataset.action;
     const optionId = button.dataset.optionId;
+
+    if (action === 'remove') {
+      const option = room.options.find((entry) => entry.id === optionId);
+      if (!option) return;
+      if (option.votes || option.vetoes) {
+        const ok = window.confirm(`「${option.name}」已有 ${option.votes || 0} 票想吃、${option.vetoes || 0} 票否决，确定移除？`);
+        if (!ok) return;
+      }
+      postAction('remove-option', { optionId }, button, '移除中…');
+      return;
+    }
+
+    if (room.phase !== 'voting') return;
     const current = room.myVote || {};
     const next = {
       optionId: current.optionId || null,

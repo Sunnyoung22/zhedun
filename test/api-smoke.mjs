@@ -50,12 +50,31 @@ const duplicate = await request(`/api/rooms/${code}/options`, {
 });
 assert(duplicate.status === 409, 'duplicate should fail');
 
+const disposable = await request(`/api/rooms/${code}/options`, {
+  method: 'POST',
+  body: { playerId: hostId, name: '寿司拼盘' }
+});
+assert(disposable.status === 200, 'add disposable failed');
+const disposableOption = disposable.data.room.options.find((option) => option.name === '寿司拼盘');
+const removed = await request(`/api/rooms/${code}/remove-option`, {
+  method: 'POST',
+  body: { playerId: hostId, optionId: disposableOption.id }
+});
+assert(removed.status === 200, 'remove option failed');
+assert(!removed.data.room.options.some((option) => option.name === '寿司拼盘'), 'removed option still on table');
+
 const joined = await request(`/api/rooms/${code}/join`, {
   method: 'POST',
   body: { name: '测试乙' }
 });
 assert(joined.status === 201, 'join failed');
 const guestId = joined.data.playerId;
+
+const forbiddenRemove = await request(`/api/rooms/${code}/remove-option`, {
+  method: 'POST',
+  body: { playerId: guestId, optionId: joined.data.room.options[0].id }
+});
+assert(forbiddenRemove.status === 403, 'guest should not remove someone else option');
 
 const started = await request(`/api/rooms/${code}/start`, {
   method: 'POST',

@@ -142,7 +142,9 @@ export function createSolo({ store }) {
     customName: $('#customName'),
     customPrice: $('#customPrice'),
     customDistance: $('#customDistance'),
-    customError: $('#customError')
+    customError: $('#customError'),
+    customLibrary: $('#customLibrary'),
+    customLibraryList: $('#customLibraryList')
   };
 
   const wheel = new Wheel(els.wheel);
@@ -222,6 +224,7 @@ export function createSolo({ store }) {
           <span class="legend-dot" style="--legend-color:${tone.bg}"></span>
           <span class="legend-name">${escapeHtml(option.name)}</span>
           <span class="legend-price">${escapeHtml(formatMoney(option.price))}</span>
+          <button type="button" class="legend-remove" data-remove-id="${escapeHtml(option.id)}" aria-label="排除${escapeHtml(option.name)}" title="从本轮排除">×</button>
         </div>
       `;
     }).join('');
@@ -231,6 +234,23 @@ export function createSolo({ store }) {
       item.addEventListener('pointerenter', () => wheel.highlight(id));
       item.addEventListener('pointerleave', () => wheel.highlight(null));
     }
+  }
+
+  function removeCandidate(optionId) {
+    if (spinning) return;
+    if (pool.length <= 2) {
+      toast('至少留两个候选，不然就不叫选择了。');
+      return;
+    }
+    const option = pool.find((entry) => entry.id === optionId);
+    if (!option) return;
+    pool = pool.filter((entry) => entry.id !== optionId);
+    accepted = false;
+    wheel.setOptions(pool);
+    renderLegend();
+    updateStageText();
+    els.stageQuote.textContent = `“已排除「${option.name}」。还剩 ${pool.length} 个。”`;
+    toast(`已排除「${option.name}」，本轮不会再出现。`);
   }
 
   function getToneColor(toneKey) {
@@ -474,11 +494,37 @@ export function createSolo({ store }) {
     toast('条件已恢复默认。');
   }
 
+  function renderCustomLibrary() {
+    const options = store.customOptions;
+    els.customLibrary.hidden = options.length === 0;
+    els.customLibraryList.innerHTML = options.map((option) => `
+      <div class="custom-library-item">
+        <span class="custom-library-name">${escapeHtml(option.name)}</span>
+        <span class="custom-library-price">${escapeHtml(formatMoney(option.price))} · ${escapeHtml(String(option.distance ?? '?'))} 分钟</span>
+        <button type="button" class="custom-delete" data-delete-custom="${escapeHtml(option.id)}" aria-label="删除私藏${escapeHtml(option.name)}">删除</button>
+      </div>
+    `).join('');
+  }
+
+  function deleteCustomOption(optionId) {
+    const option = store.customOptions.find((entry) => entry.id === optionId);
+    if (!option) return;
+    if (!window.confirm(`从「我的私藏」里删除「${option.name}」？`)) return;
+    store.removeCustom(optionId);
+    if (pool.some((entry) => entry.id === optionId)) {
+      accepted = false;
+      buildPool();
+    }
+    renderCustomLibrary();
+    toast(`已删除私藏「${option.name}」。`);
+  }
+
   function openAddDialog() {
     els.customError.textContent = '';
     els.customName.value = '';
     els.customPrice.value = '50';
     els.customDistance.value = '10';
+    renderCustomLibrary();
     openDialog(els.addDialog);
     window.setTimeout(() => els.customName.focus(), 30);
   }
@@ -520,6 +566,7 @@ export function createSolo({ store }) {
     };
 
     store.addCustom(option);
+    renderCustomLibrary();
     closeDialog(els.addDialog);
     accepted = false;
     round += 1;
@@ -574,6 +621,11 @@ export function createSolo({ store }) {
     els.resetPrefs.addEventListener('click', resetPrefs);
     els.addOptionBtn.addEventListener('click', openAddDialog);
     els.customForm.addEventListener('submit', addCustomOption);
+    els.customLibraryList.addEventListener('click', (event) => {
+      const button = event.target.closest('[data-delete-custom]');
+      if (!button) return;
+      deleteCustomOption(button.dataset.deleteCustom);
+    });
     els.customName.addEventListener('input', () => {
       els.customError.textContent = '';
     });
@@ -582,6 +634,12 @@ export function createSolo({ store }) {
       const button = event.target.closest('[data-pref]');
       if (!button) return;
       setPref(button.dataset.pref, button.dataset.value);
+    });
+
+    els.wheelLegend.addEventListener('click', (event) => {
+      const button = event.target.closest('[data-remove-id]');
+      if (!button) return;
+      removeCandidate(button.dataset.removeId);
     });
 
     els.resultCloseX.addEventListener('click', closeResult);
