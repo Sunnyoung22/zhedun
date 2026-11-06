@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="这顿">
+  <rect width="64" height="64" rx="15" fill="#D94E35"/>
+  <rect x="3.5" y="3.5" width="57" height="57" rx="12" fill="none" stroke="#FFF7E8" stroke-opacity=".24"/>
+  <path d="M13 33h38c-1.6 13-8.4 20-19 20s-17.4-7-19-20Z" fill="#FFF7E8"/>
+  <path d="M13 33h38" stroke="#231F18" stroke-width="2.4" stroke-linecap="round"/>
+  <path d="M25 19c-3 3 3 4 0 7M34 15c-3 3 3 4 0 7M43 19c-3 3 3 4 0 7" fill="none" stroke="#FFF7E8" stroke-width="2.2" stroke-linecap="round"/>
+  <path d="M22 38c2 5 5 7 10 7" fill="none" stroke="#D94E35" stroke-width="1.6" stroke-linecap="round" opacity=".55"/>
+</svg>

@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#F3EBDD">
+  <meta name="description" content="这顿 — 一个替你决定吃什么、去哪吃的小工具。先缩到五个选项，再让一点运气替你收尾。">
+  <title>这顿 · 吃什么，定了</title>
+  <link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <svg class="svg-sprite" aria-hidden="true" focusable="false">
+    <symbol id="i-arrow-up-right" viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></symbol>
+    <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M4 12h15M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-shuffle" viewBox="0 0 24 24"><path d="M4 7h3.2c4.8 0 4.8 10 9.6 10H20M17 4l3 3-3 3M4 17h3.2c1.8 0 3-.8 4-2.1M17 14l3 3-3 3"/></symbol>
+    <symbol id="i-dice" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="9" cy="9" r="1"/><circle cx="15" cy="9" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="9" cy="15" r="1"/><circle cx="15" cy="15" r="1"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+    <symbol id="i-map" viewBox="0 0 24 24"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="3"/></symbol>
+    <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M20 13v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-6"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M7 7l1 14h8l1-14"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8"/></symbol>
+    <symbol id="i-fork" viewBox="0 0 24 24"><path d="M7 3v6a3 3 0 0 0 6 0V3M10 3v18M17 3c-1.5 2-2 4-2 7 0 2 .8 3 2 3s2-1 2-3c0-3-.5-5-2-7ZM17 13v8"/></symbol>
+  </svg>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="#solo" data-route="solo" aria-label="这顿首页">
+        <span class="brand-seal" aria-hidden="true">顿</span>
+        <span class="brand-copy">
+          <strong>这顿</strong>
+          <small>THE MEAL, DECIDED</small>
+        </span>
+      </a>
+
+      <nav class="main-nav" aria-label="主要导航">
+        <button type="button" class="nav-link is-active" data-route="solo">
+          <span>替我定</span><small>SOLO</small>
+        </button>
+        <button type="button" class="nav-link" data-route="group">
+          <span>组个局</span><small>TABLE</small>
+        </button>
+        <button type="button" class="nav-link" data-route="history">
+          <span>饭历</span><small>LOG</small>
+        </button>
+      </nav>
+
+      <div class="header-right">
+        <span class="header-meal"><i class="live-dot"></i><span id="headerMeal">晚餐</span></span>
+        <button type="button" class="link-btn" id="aboutBtn">设计手记</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="site-main" id="main">
+    <!-- ==================== 一人食 ==================== -->
+    <section class="view view-solo is-active" id="view-solo" data-view="solo">
+      <div class="solo-grid">
+        <div class="solo-intro">
+          <div class="eyebrow-row">
+            <p class="eyebrow"><i class="live-dot"></i><span id="mealContext">周四 · 18:42 · 晚餐</span></p>
+            <span class="issue-no">ISSUE <b id="issueNo">001</b></span>
+          </div>
+
+          <h1 class="display">
+            <span>这顿，</span>
+            <span class="display-accent"><em>吃什么？</em><i class="brush" aria-hidden="true"></i></span>
+          </h1>
+
+          <p class="intro-copy">别翻点评，别在群里接龙。<br>先缩到五个选项，再让一点运气替你收尾。</p>
+
+          <div class="brief-card" aria-label="今天的情况">
+            <div class="brief-head">
+              <span>今天的情况</span>
+              <button type="button" class="mini-link" id="resetPrefs">恢复默认</button>
+            </div>
+
+            <div class="pref-row">
+              <span class="pref-label">几个人</span>
+              <div class="chip-row" data-pref-group="people">
+                <button type="button" class="pref-chip" data-pref="people" data-value="1">1 人</button>
+                <button type="button" class="pref-chip" data-pref="people" data-value="2">2 人</button>
+                <button type="button" class="pref-chip" data-pref="people" data-value="4">3–4 人</button>
+                <button type="button" class="pref-chip" data-pref="people" data-value="8">一群人</button>
+              </div>
+            </div>
+
+            <div class="pref-row">
+              <span class="pref-label">预算</span>
+              <div class="chip-row" data-pref-group="budget">
+                <button type="button" class="pref-chip" data-pref="budget" data-value="30">¥30 内</button>
+                <button type="button" class="pref-chip" data-pref="budget" data-value="60">¥60 内</button>
+                <button type="button" class="pref-chip" data-pref="budget" data-value="100">¥100 内</button>
+                <button type="button" class="pref-chip" data-pref="budget" data-value="999">不限</button>
+              </div>
+            </div>
+
+            <div class="pref-row">
+              <span class="pref-label">想吃</span>
+              <div class="chip-row" data-pref-group="mood">
+                <button type="button" class="pref-chip" data-pref="mood" data-value="warm">热乎的</button>
+                <button type="button" class="pref-chip" data-pref="mood" data-value="light">清爽的</button>
+                <button type="button" class="pref-chip" data-pref="mood" data-value="spicy">重口的</button>
+                <button type="button" class="pref-chip" data-pref="mood" data-value="any">都行</button>
+              </div>
+            </div>
+
+            <div class="pref-row">
+              <span class="pref-label">距离</span>
+              <div class="chip-row" data-pref-group="distance">
+                <button type="button" class="pref-chip" data-pref="distance" data-value="5">楼下</button>
+                <button type="button" class="pref-chip" data-pref="distance" data-value="15">15 分钟</button>
+                <button type="button" class="pref-chip" data-pref="distance" data-value="30">不设限</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="primary-row">
+            <button type="button" class="btn btn-primary btn-decision" id="spinBtn">
+              <span class="btn-icon"><svg><use href="#i-dice"></use></svg></span>
+              <span>替我决定</span>
+              <span class="key-hint">SPACE</span>
+            </button>
+            <button type="button" class="btn btn-quiet" id="shuffleBtn">
+              <svg class="btn-svg"><use href="#i-shuffle"></use></svg>
+              <span>换一批候选</span>
+            </button>
+          </div>
+
+          <div class="intel-line">
+            <span class="intel-mark" aria-hidden="true"></span>
+            <span id="avoidNote">已避开最近 7 天吃过的</span>
+            <button type="button" class="link-underline" id="addOptionBtn">＋ 加一个我想吃的</button>
+          </div>
+        </div>
+
+        <div class="wheel-stage" id="wheelStage">
+          <div class="stage-glow" aria-hidden="true"></div>
+          <div class="stage-head">
+            <div class="stage-round">
+              <span class="stage-kicker">ROUND <b id="roundNo">01</b></span>
+              <strong>本轮候选 <span id="candidateCount">05</span></strong>
+            </div>
+            <span class="stage-note" id="poolNote">2 人 · ¥60 内 · 15 分钟</span>
+          </div>
+
+          <div class="wheel-area">
+            <div class="wheel-pointer" aria-hidden="true">
+              <span class="pointer-pin"></span>
+              <span class="pointer-tail"></span>
+            </div>
+            <div class="wheel-ring">
+              <div class="wheel" id="wheel" aria-hidden="true"></div>
+              <button type="button" class="wheel-center" id="wheelCenter" aria-label="转动转盘，替我决定">
+                <span class="wheel-center-top">命运</span>
+                <span class="wheel-center-main">转</span>
+                <span class="wheel-center-bottom">SPIN</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="stage-foot">
+            <div class="wheel-legend" id="wheelLegend" role="list" aria-label="本轮候选与人均价格"></div>
+            <div class="stage-bottom-line">
+              <p class="stage-quote" id="stageQuote">“指针停在哪，就吃哪个。”</p>
+              <span class="stage-sign">FATE, SERVED.</span>
+            </div>
+          </div>
+          <div class="stage-stamp" id="stageStamp" aria-hidden="true"><span>DINNER</span><b>DECIDED</b></div>
+        </div>
+      </div>
+
+      <section class="principles" aria-label="设计原则">
+        <div class="principle">
+          <span class="principle-no">01</span>
+          <div><h3>选择少一点</h3><p>选项超过一定数量，满意度反而下降。五个，是够用和自由之间的折中。</p></div>
+        </div>
+        <div class="principle">
+          <span class="principle-no">02</span>
+          <div><h3>够好就行</h3><p>不寻找“最优解”，只寻找“现在能好好吃的一顿”。满意即可，是成年人的省电模式。</p></div>
+        </div>
+        <div class="principle">
+          <span class="principle-no">03</span>
+          <div><h3>让命运分担</h3><p>随机不是放弃选择，而是停止内耗。指针落下的那一刻，责任也一起落地了。</p></div>
+        </div>
+        <button type="button" class="principles-more" id="principlesMore">
+          <span>读设计手记</span>
+          <svg><use href="#i-arrow-up-right"></use></svg>
+        </button>
+      </section>
+    </section>
+
+    <!-- ==================== 饭局 ==================== -->
+    <section class="view view-group" id="view-group" data-view="group" hidden>
+      <div class="group-hero">
+        <div class="group-hero-copy">
+          <p class="eyebrow"><i class="live-dot"></i>GROUP TABLE · 饭局</p>
+          <h1 class="display display-group">一个人点菜是选择，<br><span class="display-accent"><em>一群人点菜是外交。</em></span></h1>
+          <p class="intro-copy">开个房间，把链接丢进群里。每个人加一个选项、投一票，还能否决一个。<br>剩下的，交给一点命运。</p>
+        </div>
+        <aside class="charter-card">
+          <span class="charter-eyebrow">HOUSE RULES / 饭局三章</span>
+          <ol>
+            <li><b>01</b><span>不回答「随便」<small>“随便”会翻译成「听大家的」。</small></span></li>
+            <li><b>02</b><span>每人一次否决<small>不吃的权利，比想吃的权利更硬。</small></span></li>
+            <li><b>03</b><span>落地即共识<small>转盘停了就开饭，不翻旧账。</small></span></li>
+          </ol>
+        </aside>
+      </div>
+
+      <div class="group-entry" id="groupEntry">
+        <form class="panel panel-create" id="createRoomForm">
+          <div class="panel-top">
+            <span class="panel-index">01 / 开局</span>
+            <span class="panel-mark">OPEN A TABLE</span>
+          </div>
+          <h2>开个饭局</h2>
+          <p class="panel-copy">你当房主。把房间码发进群里，等人齐了就开始表态。</p>
+          <label class="field">
+            <span>你的名字</span>
+            <input id="createName" name="name" maxlength="12" autocomplete="nickname" placeholder="例如：小林" required>
+          </label>
+          <label class="field">
+            <span>这顿叫什么</span>
+            <input id="createTitle" name="title" maxlength="20" value="今晚这顿" autocomplete="off">
+          </label>
+          <button type="submit" class="btn btn-primary btn-full">
+            <span>生成房间码</span>
+            <svg><use href="#i-arrow-right"></use></svg>
+          </button>
+          <p class="panel-foot">不用注册。房间 12 小时后自动消失。</p>
+        </form>
+
+        <form class="panel panel-join" id="joinRoomForm">
+          <div class="panel-top">
+            <span class="panel-index">02 / 加入</span>
+            <span class="panel-mark">JOIN THE TABLE</span>
+          </div>
+          <h2>我已经有码</h2>
+          <p class="panel-copy">输入同事发来的四位房间码。如果打开的是邀请链接，码已经替你填好了。</p>
+          <label class="field">
+            <span>房间码</span>
+            <input id="joinCode" name="code" class="code-input" maxlength="4" inputmode="text" autocomplete="off" placeholder="A7K2" required>
+          </label>
+          <label class="field">
+            <span>你的名字</span>
+            <input id="joinName" name="name" maxlength="12" autocomplete="nickname" placeholder="例如：阿禾" required>
+          </label>
+          <button type="submit" class="btn btn-cream btn-full">
+            <span>进入饭局</span>
+            <svg><use href="#i-arrow-right"></use></svg>
+          </button>
+          <p class="panel-foot">先到的先点菜。晚到的也能加选项。</p>
+        </form>
+      </div>
+
+      <section class="room" id="groupRoom" hidden>
+        <div class="room-bar">
+          <div class="room-code-wrap">
+            <span class="room-code-label">ROOM</span>
+            <button type="button" class="room-code" id="roomCodeBtn" title="复制房间码">----</button>
+            <button type="button" class="room-link-btn" id="copyLinkBtn" title="复制邀请链接" aria-label="复制邀请链接">
+              <svg><use href="#i-copy"></use></svg><span>复制邀请链接</span>
+            </button>
+          </div>
+          <div class="room-bar-right">
+            <span class="room-conn" id="roomConn"><i></i>连接中</span>
+            <button type="button" class="room-leave" id="leaveRoomBtn">离开房间</button>
+          </div>
+        </div>
+
+        <div class="room-grid">
+          <aside class="room-side">
+            <p class="eyebrow">THE TABLE</p>
+            <h2 id="roomTitle">今晚这顿</h2>
+            <p class="room-sub" id="roomMeta">等待饭搭子</p>
+            <div class="player-head"><span>饭搭子</span><span id="playerCount">1</span></div>
+            <div class="player-list" id="playerList"></div>
+            <div class="room-charter">
+              <span class="charter-title">饭局三章</span>
+              <p><b>01</b> 不回答「随便」</p>
+              <p><b>02</b> 每人一次否决</p>
+              <p><b>03</b> 转盘落地即共识</p>
+            </div>
+            <button type="button" class="room-about-link" id="groupAboutBtn">为什么这样设计？<svg><use href="#i-arrow-up-right"></use></svg></button>
+          </aside>
+
+          <div class="room-main">
+            <div class="phase-banner" id="phaseBanner">
+              <div>
+                <span class="phase-kicker" id="phaseKicker">LOBBY</span>
+                <h3 id="phaseTitle">先往桌上放点吃的</h3>
+                <p id="phaseDesc">每人加一个选项。别写「随便」，这里只收具体的店或菜。</p>
+              </div>
+              <span class="phase-step" id="phaseStep">01 / 03</span>
+            </div>
+
+            <div class="room-options-head">
+              <div><h3>桌上的选项</h3><span class="muted" id="optionCount">0 个</span></div>
+              <button type="button" class="btn-small" id="toggleAddOption">＋ 加一个</button>
+            </div>
+
+            <form class="add-option-form" id="roomAddOptionForm" hidden>
+              <input id="roomOptionName" maxlength="24" placeholder="例如：楼下那家越南粉" autocomplete="off" aria-label="新选项名称">
+              <button type="submit" class="btn-small btn-small-dark">放上桌</button>
+              <button type="button" class="btn-small" id="cancelAddOption">取消</button>
+              <div class="suggestion-row" id="roomSuggestions" aria-label="快速添加"></div>
+            </form>
+
+            <div class="room-options" id="roomOptions"></div>
+            <div class="room-actions" id="roomActions"></div>
+          </div>
+        </div>
+
+        <div class="group-result" id="groupResult" hidden></div>
+      </section>
+    </section>
+
+    <!-- ==================== 饭历 ==================== -->
+    <section class="view view-history" id="view-history" data-view="history" hidden>
+      <div class="history-hero">
+        <div>
+          <p class="eyebrow"><i class="live-dot"></i>MEAL LOG · 饭历</p>
+          <h1 class="display">吃过什么，<br><span class="display-accent"><em>都算数。</em></span></h1>
+          <p class="intro-copy">不用打卡，不用评分。这里只记录那些“已经决定好了”的瞬间。</p>
+        </div>
+        <div class="stat-grid">
+          <div class="stat-card"><span>已定</span><strong id="statTotal">0</strong><small>顿</small></div>
+          <div class="stat-card"><span>省下的纠结</span><strong id="statMinutes">0</strong><small>分钟</small></div>
+          <div class="stat-card stat-card-wide"><span>最常吃</span><strong id="statTop">—</strong><small id="statTopCount">还没有记录</small></div>
+        </div>
+      </div>
+
+      <div class="history-toolbar">
+        <div class="segmented" role="group" aria-label="筛选饭历">
+          <button type="button" class="seg-btn is-active" data-history-filter="all">全部</button>
+          <button type="button" class="seg-btn" data-history-filter="solo">一人食</button>
+          <button type="button" class="seg-btn" data-history-filter="group">饭局</button>
+        </div>
+        <button type="button" class="text-btn text-btn-danger" id="clearHistoryBtn">
+          <svg><use href="#i-trash"></use></svg>清空饭历
+        </button>
+      </div>
+
+      <div class="history-list" id="historyList"></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="brand-seal brand-seal-small" aria-hidden="true">顿</span>
+        <span><strong>这顿</strong><small>THE MEAL, DECIDED</small></span>
+      </div>
+      <p class="footer-note">不收集位置，不制造更多选择。饭历只留在你的浏览器里。</p>
+      <button type="button" class="link-btn" id="footerAboutBtn">设计手记</button>
+    </div>
+  </footer>
+
+  <nav class="mobile-nav" aria-label="移动端导航">
+    <button type="button" class="mobile-nav-btn is-active" data-route="solo">
+      <svg><use href="#i-dice"></use></svg><span>替我定</span>
+    </button>
+    <button type="button" class="mobile-nav-btn" data-route="group">
+      <svg><use href="#i-users"></use></svg><span>组个局</span>
+    </button>
+    <button type="button" class="mobile-nav-btn" data-route="history">
+      <svg><use href="#i-fork"></use></svg><span>饭历</span>
+    </button>
+  </nav>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- ==================== 结果饭票 ==================== -->
+  <dialog class="result-dialog" id="resultDialog" aria-labelledby="resultHeadline">
+    <div class="result-confetti" id="resultConfetti" aria-hidden="true"></div>
+    <div class="result-shell">
+      <button type="button" class="dialog-x" id="resultCloseX" aria-label="关闭结果">
+        <svg><use href="#i-close"></use></svg>
+      </button>
+
+      <article class="ticket" id="resultTicket">
+        <header class="ticket-top">
+          <span class="ticket-brand">这顿 / THE MEAL, DECIDED</span>
+          <span class="ticket-no" id="ticketNo">NO. 000000-00</span>
+        </header>
+        <div class="ticket-body">
+          <div class="ticket-stamp" id="ticketStamp">锅</div>
+          <p class="ticket-kicker" id="ticketKicker">DINNER · FOR TWO · ¥98</p>
+          <h2 id="resultHeadline">命运说，<br>就它了。</h2>
+          <p class="ticket-name" id="ticketName">潮汕牛肉火锅</p>
+          <p class="ticket-desc" id="ticketDesc"></p>
+          <div class="ticket-tags" id="ticketTags"></div>
+          <p class="ticket-reason"><span>为什么是它</span><b id="ticketReason"></b></p>
+        </div>
+        <div class="ticket-perf" aria-hidden="true"></div>
+        <footer class="ticket-bottom">
+          <div class="ticket-barcode" id="ticketBarcode" aria-hidden="true"></div>
+          <div class="ticket-meta">
+            <span id="ticketPlace">建议搜索附近门店</span>
+            <span id="ticketFoot">FATE, SERVED.</span>
+          </div>
+        </footer>
+        <span class="ticket-approved" aria-hidden="true">定了</span>
+      </article>
+
+      <div class="result-actions" id="resultActions">
+        <button type="button" class="btn btn-primary" id="acceptBtn" autofocus>
+          <span>就它了</span><svg><use href="#i-check"></use></svg>
+        </button>
+        <button type="button" class="btn btn-quiet" id="againBtn">再转一次</button>
+        <button type="button" class="text-btn" id="resultCloseBtn">先看看</button>
+      </div>
+
+      <div class="result-accepted-actions" id="acceptedActions" hidden>
+        <a class="btn btn-primary" id="mapBtn" href="#" target="_blank" rel="noopener">
+          <svg><use href="#i-map"></use></svg><span>在地图找附近</span>
+        </a>
+        <button type="button" class="btn btn-quiet" id="ticketBtn">
+          <svg><use href="#i-share"></use></svg><span>保存饭票</span>
+        </button>
+        <button type="button" class="text-btn" id="copyResultBtn">复制文案</button>
+        <button type="button" class="text-btn" id="acceptedCloseBtn">收好，去吃饭</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ==================== 加一个选项 ==================== -->
+  <dialog class="sheet sheet-small" id="addOptionDialog" aria-labelledby="addOptionTitle">
+    <form class="sheet-form" id="customOptionForm">
+      <button type="button" class="dialog-x" data-close-dialog="addOptionDialog" aria-label="关闭">
+        <svg><use href="#i-close"></use></svg>
+      </button>
+      <p class="eyebrow">ADD TO THE WHEEL</p>
+      <h2 id="addOptionTitle">你想吃的，<br>也放进来。</h2>
+      <p class="sheet-copy">转盘不是命运的黑箱。你可以在里面塞一点自己的私心。</p>
+
+      <label class="field">
+        <span>店名 / 想吃的</span>
+        <input id="customName" maxlength="24" placeholder="例如：楼下那家越南粉" autocomplete="off" required>
+      </label>
+      <div class="field-row">
+        <label class="field">
+          <span>人均（元）</span>
+          <input id="customPrice" type="number" min="0" max="999" value="50" inputmode="numeric">
+        </label>
+        <label class="field">
+          <span>步行（分钟）</span>
+          <input id="customDistance" type="number" min="0" max="120" value="10" inputmode="numeric">
+        </label>
+      </div>
+      <p class="form-hint">写「随便」不会成功。这里只收具体的店或菜。</p>
+      <p class="form-error" id="customError" role="alert"></p>
+      <button type="submit" class="btn btn-primary btn-full">
+        <span>放进转盘</span><svg><use href="#i-plus"></use></svg>
+      </button>
+    </form>
+  </dialog>
+
+  <!-- ==================== 设计手记 ==================== -->
+  <dialog class="sheet sheet-about" id="aboutDialog" aria-labelledby="aboutTitle">
+    <div class="about-shell">
+      <button type="button" class="dialog-x" data-close-dialog="aboutDialog" aria-label="关闭">
+        <svg><use href="#i-close"></use></svg>
+      </button>
+      <p class="eyebrow">DESIGN NOTES · 设计手记</p>
+      <h2 id="aboutTitle">把选择变少，<br>把饭吃好。</h2>
+      <p class="about-lede">「这顿」不是一个餐厅目录，也不是一个抽奖玩具。它想处理的是饭点那一刻真实发生的认知摩擦：太多选项、太多意见、太多“都可以”。</p>
+
+      <div class="about-grid">
+        <article>
+          <span class="about-no">01</span>
+          <h3>选择过载是真的</h3>
+          <p>选项越多，人越容易推迟决定，也更难对结果满意。与其给你 200 家店，不如给你 5 个能立刻行动的方向。</p>
+        </article>
+        <article>
+          <span class="about-no">02</span>
+          <h3>“够好”胜过“最优”</h3>
+          <p>Herbert Simon 把这种策略叫作 satisficing：设定一个足够好的标准，找到第一个满足它的选项，然后停止搜索。饭点不是论文答辩。</p>
+        </article>
+        <article>
+          <span class="about-no">03</span>
+          <h3>随机是一种承诺装置</h3>
+          <p>当结果由转盘产生，“选错”的责任被分摊给命运。人更容易停止反刍，把注意力还给眼前这顿饭。前提是：选项先经过你的约束。</p>
+        </article>
+      </div>
+
+      <div class="about-manifesto">
+        <span>我们故意没做</span>
+        <p>无限下拉、评分排名、猜你喜欢、连续签到。它们会让选择看起来更多，却让决定更难。</p>
+      </div>
+
+      <div class="about-group-note">
+        <span>关于饭局</span>
+        <p>匿名投票降低从众压力；每人一次否决权保护饮食禁忌；被否决的选项直接出局，幸存者按人气加权，但不由人气直接钦定。这样既有公平感，也保留一点命运。</p>
+      </div>
+
+      <p class="about-ref">参考：Iyengar &amp; Lepper (2000), <i>When Choice is Demotivating</i>；Schwartz (2004), <i>The Paradox of Choice</i>；Simon (1956), <i>Rational Choice and the Structure of the Environment</i>。</p>
+      <button type="button" class="btn btn-primary btn-full" data-close-dialog="aboutDialog">知道了，去吃饭</button>
+    </div>
+  </dialog>
+
+  <!-- ==================== 确认框 ==================== -->
+  <dialog class="sheet sheet-small" id="confirmDialog" aria-labelledby="confirmTitle">
+    <div class="confirm-shell">
+      <button type="button" class="dialog-x" data-close-dialog="confirmDialog" aria-label="关闭">
+        <svg><use href="#i-close"></use></svg>
+      </button>
+      <p class="eyebrow">ONE MORE THING</p>
+      <h2 id="confirmTitle">清空饭历？</h2>
+      <p class="sheet-copy" id="confirmText">所有记录都会从这台设备上消失，且无法恢复。</p>
+      <div class="confirm-actions">
+        <button type="button" class="btn btn-quiet" data-close-dialog="confirmDialog">再想想</button>
+        <button type="button" class="btn btn-danger" id="confirmOk">确认清空</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script type="module" src="/js/app.js"></script>
+</body>
+</html>

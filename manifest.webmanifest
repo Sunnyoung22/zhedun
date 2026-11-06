@@ -1,0 +1,19 @@
+{
+  "name": "这顿 · 吃什么，定了",
+  "short_name": "这顿",
+  "description": "先缩到五个选项，再让一点运气替你收尾。",
+  "lang": "zh-CN",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F3EBDD",
+  "theme_color": "#F3EBDD",
+  "icons": [
+    {
+      "src": "./assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

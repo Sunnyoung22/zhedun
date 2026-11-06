@@ -1,0 +1,19 @@
+{
+  "name": "zhe-dun",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "这顿 — 一个替你决定吃什么、去哪吃的小工具",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "build:pages": "node scripts/build-pages.mjs",
+    "test": "node test/engine.test.mjs",
+    "test:all": "node --test",
+    "test:unit": "node test/engine.test.mjs",
+    "test:api": "node test/api-smoke.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
