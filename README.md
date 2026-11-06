@@ -239,6 +239,10 @@ npm run build:pages
 - 可选的“无随机”模式：只做加权排序，不转盘。
 - PWA 离线缓存与安装引导。
 
+## 作者
+
+**Evan Shen** · 成都
+
 ## 参考
 
 - Iyengar, S. S., & Lepper, M. R. (2000). *When Choice is Demotivating: Can One Desire Too Much of a Good Thing?*
